@@ -35,6 +35,9 @@
 #include <openthread/platform/alarm-micro.h>
 #include <openthread/platform/alarm-milli.h>
 #include <openthread/platform/diag.h>
+#if OPENTHREAD_SIMULATION_VIRTUAL_TIME == 0
+#include <openthread/platform/nodeid_filter.h>
+#endif
 #include <openthread/platform/radio.h>
 #include <openthread/platform/time.h>
 
@@ -296,7 +299,7 @@ static void initFds(void)
     }
 
     sockaddr.sin_family      = AF_INET;
-    sockaddr.sin_port        = htons((uint16_t)(9000 + sPortOffset + WELLKNOWN_NODE_ID));
+    sockaddr.sin_port        = htons((uint16_t)(9000 + sPortOffset));
     sockaddr.sin_addr.s_addr = inet_addr(OT_RADIO_GROUP);
 
     otEXPECT_ACTION(bind(fd, (struct sockaddr *)&sockaddr, sizeof(sockaddr)) != -1, perror("bind(sRxFd)"));
@@ -737,7 +740,10 @@ void platformRadioProcess(otInstance *aInstance, const fd_set *aReadFdSet, const
 
         if (rval > 0)
         {
-            if (sockaddr.sin_port != htons(sPort))
+            uint16_t srcPort   = ntohs(sockaddr.sin_port);
+            uint16_t srcNodeId = srcPort - sPortOffset - 9000;
+
+            if (otNodeIdFilterIsConnectable(aInstance, srcNodeId) && srcPort != sPort)
             {
                 sReceiveFrame.mLength = (uint16_t)(rval - 1);
 
@@ -755,7 +761,7 @@ void platformRadioProcess(otInstance *aInstance, const fd_set *aReadFdSet, const
             exit(EXIT_FAILURE);
         }
     }
-#endif
+#endif // OPENTHREAD_SIMULATION_VIRTUAL_TIME == 0
 
     if (platformRadioIsTransmitPending())
     {
@@ -773,7 +779,7 @@ void radioTransmit(struct RadioMessage *aMessage, const struct otRadioFrame *aFr
     sockaddr.sin_family = AF_INET;
     inet_pton(AF_INET, OT_RADIO_GROUP, &sockaddr.sin_addr);
 
-    sockaddr.sin_port = htons((uint16_t)(9000 + sPortOffset + WELLKNOWN_NODE_ID));
+    sockaddr.sin_port = htons((uint16_t)(9000 + sPortOffset));
     rval =
         sendto(sTxFd, (const char *)aMessage, 1 + aFrame->mLength, 0, (struct sockaddr *)&sockaddr, sizeof(sockaddr));
 

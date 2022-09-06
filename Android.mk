@@ -166,6 +166,7 @@ LOCAL_SRC_FILES                                          := \
     src/core/api/message_api.cpp                            \
     src/core/api/netdata_api.cpp                            \
     src/core/api/netdiag_api.cpp                            \
+    src/core/api/nodeid_filter_api.cpp                      \
     src/core/api/random_crypto_api.cpp                      \
     src/core/api/random_noncrypto_api.cpp                   \
     src/core/api/server_api.cpp                             \
@@ -233,6 +234,7 @@ LOCAL_SRC_FILES                                          := \
     src/core/net/ip6_headers.cpp                            \
     src/core/net/ip6_mpl.cpp                                \
     src/core/net/netif.cpp                                  \
+    src/core/net/nodeid_filter.cpp                          \
     src/core/net/udp6.cpp                                   \
     src/core/radio/radio.cpp                                \
     src/core/radio/radio_callbacks.cpp                      \

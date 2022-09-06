@@ -68,6 +68,9 @@
 #include "common/settings.hpp"
 #include "meshcop/border_agent.hpp"
 #include "net/ip6.hpp"
+#if OPENTHREAD_EXAMPLES_SIMULATION
+#include "net/nodeid_filter.hpp"
+#endif
 #include "thread/announce_sender.hpp"
 #include "thread/link_quality.hpp"
 #include "thread/thread_netif.hpp"
@@ -391,6 +394,9 @@ private:
 #endif
 #if OPENTHREAD_CONFIG_DIAG_ENABLE
     FactoryDiags::Diags mDiags;
+#endif
+#if OPENTHREAD_EXAMPLES_SIMULATION && (OPENTHREAD_FTD || OPENTHREAD_MTD)
+    NodeId::Filter mNodeIdFilter;
 #endif
     bool mIsInitialized;
 };
@@ -816,6 +822,13 @@ template <> inline Extension::ExtensionBase &Instance::Get(void)
 template <> inline FactoryDiags::Diags &Instance::Get(void)
 {
     return mDiags;
+}
+#endif
+
+#if OPENTHREAD_FTD || OPENTHREAD_MTD
+template <> inline NodeId::Filter &Instance::Get(void)
+{
+    return mNodeIdFilter;
 }
 #endif
 

@@ -110,6 +110,9 @@ Instance::Instance(void)
 #if OPENTHREAD_CONFIG_DIAG_ENABLE
     , mDiags(*this)
 #endif
+#if OPENTHREAD_EXAMPLES_SIMULATION && (OPENTHREAD_FTD || OPENTHREAD_MTD)
+    , mNodeIdFilter(*this)
+#endif
     , mIsInitialized(false)
 {
 }

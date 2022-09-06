@@ -92,6 +92,8 @@
 #include <openthread/platform/debug_uart.h>
 #endif
 
+#include <openthread/platform/nodeid_filter.h>
+
 #include "common/encoding.hpp"
 #include "common/string.hpp"
 
@@ -203,6 +205,9 @@ const struct Command Interpreter::sCommands[] = {
     {"networkname", &Interpreter::ProcessNetworkName},
 #if OPENTHREAD_CONFIG_TIME_SYNC_ENABLE
     {"networktime", &Interpreter::ProcessNetworkTime},
+#endif
+#if OPENTHREAD_EXAMPLES_SIMULATION && (OPENTHREAD_FTD || OPENTHREAD_MTD)
+    {"nodeidfilter", &Interpreter::ProcessNodeIdFilter},
 #endif
     {"panid", &Interpreter::ProcessPanId},
     {"parent", &Interpreter::ProcessParent},
@@ -2382,6 +2387,50 @@ exit:
     AppendResult(error);
 }
 #endif // OPENTHREAD_CONFIG_TIME_SYNC_ENABLE
+
+#if OPENTHREAD_EXAMPLES_SIMULATION && (OPENTHREAD_FTD || OPENTHREAD_MTD)
+void Interpreter::ProcessNodeIdFilter(uint8_t aArgsLength, char *aArgs[])
+{
+    otError error = OT_ERROR_NONE;
+
+    if (aArgsLength == 0)
+    {
+        OutputFormat("Denied Node ID List:\r\n");
+
+        for (uint16_t nodeId = 1; nodeId <= OPENTHREAD_SIMULATION_MAX_NETWORK_SIZE; nodeId++)
+        {
+            if (!otNodeIdFilterIsConnectable(mInstance, nodeId))
+            {
+                OutputFormat("%d\r\n", nodeId);
+            }
+        }
+    }
+    else if (!strcmp(aArgs[0], "clear"))
+    {
+        VerifyOrExit(aArgsLength == 1, error = OT_ERROR_INVALID_ARGS);
+
+        otNodeIdFilterClear(mInstance);
+    }
+    else if (!strcmp(aArgs[0], "deny"))
+    {
+        unsigned long nodeId;
+
+        VerifyOrExit(aArgsLength == 2, error = OT_ERROR_INVALID_ARGS);
+
+        SuccessOrExit(error = ParseUnsignedLong(aArgs[1], nodeId));
+        VerifyOrExit(1 <= nodeId && nodeId <= OPENTHREAD_SIMULATION_MAX_NETWORK_SIZE, error = OT_ERROR_INVALID_ARGS);
+
+        otNodeIdFilterDeny(mInstance, (uint16_t)nodeId);
+    }
+    else
+    {
+        error = OT_ERROR_INVALID_COMMAND;
+    }
+
+exit:
+    AppendResult(error);
+}
+#endif // OPENTHREAD_EXAMPLES_SIMULATION && (OPENTHREAD_FTD || OPENTHREAD_MTD)
 
 void Interpreter::ProcessPanId(uint8_t aArgsLength, char *aArgs[])
 {

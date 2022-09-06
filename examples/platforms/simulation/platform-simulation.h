@@ -84,7 +84,8 @@ enum
 #if OPENTHREAD_CONFIG_OTNS_ENABLE
     WELLKNOWN_NODE_ID = 1000, ///< Well-known Unique ID used by a simulated radio that supports promiscuous mode.
 #else
-    WELLKNOWN_NODE_ID = 34, ///< Well-known Unique ID used by a simulated radio that supports promiscuous mode.
+    WELLKNOWN_NODE_ID = OPENTHREAD_SIMULATION_MAX_NETWORK_SIZE +
+                        1, ///< Well-known Unique ID used by a simulated radio that supports promiscuous mode.
 #endif
 };
 

@@ -376,6 +376,9 @@ private:
 #if OPENTHREAD_CONFIG_TIME_SYNC_ENABLE
     void ProcessNetworkTime(uint8_t aArgsLength, char *aArgs[]);
 #endif
+#if OPENTHREAD_EXAMPLES_SIMULATION && (OPENTHREAD_FTD || OPENTHREAD_MTD)
+    void ProcessNodeIdFilter(uint8_t aArgsLength, char *aArgs[]);
+#endif
     void ProcessPanId(uint8_t aArgsLength, char *aArgs[]);
     void ProcessParent(uint8_t aArgsLength, char *aArgs[]);
 #if OPENTHREAD_FTD

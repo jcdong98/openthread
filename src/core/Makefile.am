@@ -136,6 +136,7 @@ SOURCES_COMMON                             = \
     api/netdata_api.cpp                      \
     api/netdiag_api.cpp                      \
     api/network_time_api.cpp                 \
+    api/nodeid_filter_api.cpp                \
     api/random_crypto_api.cpp                \
     api/random_noncrypto_api.cpp             \
     api/server_api.cpp                       \
@@ -206,6 +207,7 @@ SOURCES_COMMON                             = \
     net/ip6_headers.cpp                      \
     net/ip6_mpl.cpp                          \
     net/netif.cpp                            \
+    net/nodeid_filter.cpp                    \
     net/sntp_client.cpp                      \
     net/udp6.cpp                             \
     radio/radio.cpp                          \

@@ -36,6 +36,7 @@
 
 #include "openthread-core-config.h"
 
+#include "common/clearable.hpp"
 #include "common/code_utils.hpp"
 #include "common/debug.hpp"
 #include "common/encoding.hpp"
