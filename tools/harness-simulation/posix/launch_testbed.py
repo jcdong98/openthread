@@ -150,15 +150,20 @@ def main():
     MAX_SNIFFER_NUM = 2
 
     ot_devices = [(item['tag'], item['number']) for item in ot_build['ot']]
+    ot_ref_devices = [(item['tag'], item['number']) for item in ot_build['ot_ref']]
     otbr_devices = [(item['tag'], item['number']) for item in ot_build['otbr']]
     ot_nodes_num = sum(x[1] for x in ot_devices)
+    ot_ref_nodes_num = sum(x[1] for x in ot_ref_devices)
     otbr_nodes_num = sum(x[1] for x in otbr_devices)
-    nodes_num = ot_nodes_num + otbr_nodes_num
+    nodes_num = ot_nodes_num + ot_ref_nodes_num + otbr_nodes_num
     sniffer_num = config['sniffer']['number']
 
     # Check validation of numbers
     if not all(0 <= x[1] <= max_nodes_num for x in ot_devices):
         raise ValueError(f'The number of devices of each OT version should be between 0 and {max_nodes_num}')
+
+    if not all(0 <= x[1] <= max_nodes_num for x in ot_ref_devices):
+        raise ValueError(f'The number of devices of each OT reference version should be between 0 and {max_nodes_num}')
 
     if not all(0 <= x[1] <= max_nodes_num for x in otbr_devices):
         raise ValueError(f'The number of devices of each OTBR version should be between 0 and {max_nodes_num}')
@@ -184,7 +189,7 @@ def main():
     subprocess.run(['sudo', 'modprobe', 'ip6table_filter'])
     # Start the BRs
     otbr_dockers = []
-    nodeid = ot_nodes_num
+    nodeid = ot_nodes_num + ot_ref_nodes_num
     for item in ot_build['otbr']:
         tag = item['tag']
         ot_rcp_path = os.path.join(ot_path, item['rcp_subpath'], 'examples/apps/ncp/ot-rcp')
@@ -226,7 +231,9 @@ def main():
             logging.info('Received OpenThread simulation query, advertising')
 
             nodeid = 1
-            for ven, devices in [('OpenThread_Sim', ot_devices), ('OpenThread_BR_Sim', otbr_devices)]:
+            for ven, devices in [('OpenThread_Sim', ot_devices),
+                                 ('OpenThread_Sim', ot_ref_devices),
+                                 ('OpenThread_BR_Sim', otbr_devices)]:
                 for tag, number in devices:
                     advertise_devices(s, src, ven=ven, add=addr, nodeids=range(nodeid, nodeid + number), tag=tag)
                     nodeid += number

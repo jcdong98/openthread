@@ -42,6 +42,36 @@ ot_build:
     - "-DOT_CSL_RECEIVER=ON"
     - "-DOT_LINK_METRICS_SUBJECT=ON"
     - "-DOT_LINK_METRICS_INITIATOR=ON"
+  ot_ref:
+  - tag: Ref-OT11
+    version: '1.1'
+    number: 0
+    subpath: build/ref-ot11/simulation
+    cflags:
+    - "-DOPENTHREAD_CONFIG_IP6_MAX_EXT_MCAST_ADDRS=8"
+    options:
+    - "-DOT_COMPILE_WARNING_AS_ERROR=OFF"
+    - "-DOT_COVERAGE=OFF"
+    - "-DOT_REFERENCE_DEVICE=ON"
+    - "-DOT_COMMISSIONER=ON"
+    - "-DOT_JOINER=ON"
+  - tag: Ref-OT12
+    version: '1.2'
+    number: 0
+    subpath: build/ref-ot12/simulation
+    cflags:
+    - "-DOPENTHREAD_CONFIG_IP6_MAX_EXT_MCAST_ADDRS=8"
+    options:
+    - "-DOT_COMPILE_WARNING_AS_ERROR=OFF"
+    - "-DOT_COVERAGE=OFF"
+    - "-DOT_REFERENCE_DEVICE=ON"
+    - "-DOT_DUA=ON"
+    - "-DOT_MLR=ON"
+    - "-DOT_COMMISSIONER=ON"
+    - "-DOT_JOINER=ON"
+    - "-DOT_CSL_RECEIVER=ON"
+    - "-DOT_LINK_METRICS_SUBJECT=ON"
+    - "-DOT_LINK_METRICS_INITIATOR=ON"
   otbr:
   - tag: OTBR12
     version: '1.2'

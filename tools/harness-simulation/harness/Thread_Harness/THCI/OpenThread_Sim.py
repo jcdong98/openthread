@@ -44,6 +44,7 @@ from THCI.OpenThread import OpenThreadTHCI, watched
 
 config = load_config()
 ot_subpath = {item['tag']: item['subpath'] for item in config['ot_build']['ot']}
+ot_subpath.update({item['tag']: item['subpath'] for item in config['ot_build']['ot_ref']})
 
 
 class SSHHandle(object):

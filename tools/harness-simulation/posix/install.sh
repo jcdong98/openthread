@@ -58,26 +58,22 @@ build_ot()
     # SC2155: Declare and assign separately to avoid masking return values
     local target build_dir cflags version options
     target="ot-cli-ftd"
-    build_dir=$(jq -r '.subpath' <<<"$1")
+    build_dir="${OT_DIR}/$(jq -r '.subpath' <<<"$1")"
     cflags=$(jq -r '.cflags | join(" ")' <<<"$1")
     version=$(jq -r '.version' <<<"$1")
     options=$(jq -r '.options | join(" ")' <<<"$1")
     # Intended splitting of options
     read -ra options <<<"$options"
 
-    (
-        cd "$OT_DIR"
-
-        OT_CMAKE_NINJA_TARGET="$target" \
-            OT_CMAKE_BUILD_DIR="$build_dir" \
-            CFLAGS="$cflags" \
-            CXXFLAGS="$cflags" \
-            script/cmake-build \
-            simulation \
-            "${options[@]}" \
-            -DOT_THREAD_VERSION="$version" \
-            -DOT_SIMULATION_MAX_NETWORK_SIZE="$MAX_NETWORK_SIZE"
-    )
+    OT_CMAKE_NINJA_TARGET="$target" \
+        OT_CMAKE_BUILD_DIR="$build_dir" \
+        CFLAGS="$cflags" \
+        CXXFLAGS="$cflags" \
+        script/cmake-build \
+        simulation \
+        "${options[@]}" \
+        -DOT_THREAD_VERSION="$version" \
+        -DOT_SIMULATION_MAX_NETWORK_SIZE="$MAX_NETWORK_SIZE"
 }
 
 build_otbr()
@@ -124,10 +120,25 @@ build_otbr()
         --build-arg OTBR_OPTIONS="${otbr_options[*]}"
 }
 
-for item in $(jq -c '.ot_build.ot | .[]' <<<"$CONFIG"); do
-    build_ot "$item"
-done
+# Build OT simulation
+(
+    cd "$OT_DIR"
+    for item in $(jq -c '.ot_build.ot | .[]' <<<"$CONFIG"); do
+        build_ot "$item"
+    done
+)
 
+# Build OT reference simulation
+git clone -b ref-20200818 https://github.com/jcdong98/openthread-pr.git --recurse-submodules --shallow-submodules --depth=1 ref-20200818
+(
+    cd ref-20200818
+    for item in $(jq -c '.ot_build.ot_ref | .[]' <<<"$CONFIG"); do
+        build_ot "$item"
+    done
+)
+rm -rf ref-20200818
+
+# Build OTBR simulation
 git clone https://github.com/openthread/ot-br-posix.git --recurse-submodules --shallow-submodules --depth=1
 (
     cd ot-br-posix
